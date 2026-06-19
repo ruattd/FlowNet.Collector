@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <!-- 1. Define your target frameworks. -->
-        <!-- 'netstandard2.0' is recommended, you can add other target(s) depending on your need. -->
-        <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -13,21 +11,20 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <!-- 2. Set your own package id (IMPORTANT!) and other properties below. -->
-        <PackageId>FlowNet.ExampleExtension</PackageId>
-        <Title>Flow.NET Example Extension</Title>
+        <PackageId>FlowNet.Collector</PackageId>
+        <Title>Flow.NET Collector</Title>
         <Version>0.0.0</Version>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>FlowNet;Flow;.NET;Standard;Core</PackageTags>
+        <PackageTags>FlowNet;Flow;Dependency;Collector;Component;.NET;Standard;Core</PackageTags>
         <Authors>ruattd and other contributors</Authors>
-        <Description>An example extension for Flow.NET</Description>
-        <RepositoryUrl>https://github.com/ruattd/FlowNet.ExampleExtension</RepositoryUrl>
+        <Description>Component collector for Flow.NET based on source generation</Description>
+        <RepositoryUrl>https://github.com/ruattd/FlowNet.Collector</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
         <!-- 3. Change text blow to the output file of your own source generator project. -->
-        <None Include="..\FlowNet.ExampleExtension.CodeAnalysis\bin\$(Configuration)\netstandard2.0\FlowNet.ExampleExtension.CodeAnalysis.dll"
+        <None Include="..\FlowNet.Collector.CodeAnalysis\bin\$(Configuration)\netstandard2.0\FlowNet.Collector.CodeAnalysis.dll"
               Pack="true" PackagePath="/analyzers/dotnet/cs" Visible="false" />
         <None Include="..\README.md" Pack="true" PackagePath="/" />
     </ItemGroup>

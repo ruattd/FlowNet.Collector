@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="FlowNet.Collector.CodeAnalysis\FlowNet.Collector.CodeAnalysis.csproj" />
+  <Project Path="FlowNet.Collector\FlowNet.Collector.csproj" />
+  <Project Path="FlowNet.Collector.Test\FlowNet.Collector.Test.csproj">
+    <Build Project="false" />
+  </Project>
+</Solution>

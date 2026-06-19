@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace FlowNet.ExampleExtension.CodeAnalysis.Shared;
+namespace FlowNet.Collector.CodeAnalysis.Shared;
 
 internal static class RoslynExtensions
 {

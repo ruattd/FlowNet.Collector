@@ -1,18 +1,18 @@
 using System.Text;
-using FlowNet.ExampleExtension.CodeAnalysis.Shared;
+using FlowNet.Collector.CodeAnalysis.Shared;
 using Microsoft.CodeAnalysis;
 
-namespace FlowNet.ExampleExtension.CodeAnalysis.SourceGenerators;
+namespace FlowNet.Collector.CodeAnalysis.SourceGenerators;
 
 [Generator]
 public class ExtensionInitGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(GenerateExtensionInit);
+        context.RegisterPostInitializationOutput(GenerateComponentCollectionMethod);
     }
 
-    private static void GenerateExtensionInit(IncrementalGeneratorPostInitializationContext context)
+    private static void GenerateComponentCollectionMethod(IncrementalGeneratorPostInitializationContext context)
     {
         var sb = new StringBuilder();
         sb.AppendCommonHeader();
@@ -23,11 +23,11 @@ public class ExtensionInitGenerator : IIncrementalGenerator
         sb.AppendLine("{");
         sb.Append("    ").AppendGeneratedCodeAttribute();
         sb.Append("    ").AppendExcludeFromCodeCoverageAttribute();
-        sb.AppendLine("    private static async Task Init_FlowNet_ExampleExtension()");
+        sb.AppendLine("    private static async Task InvokeComponentCollection()");
         sb.AppendLine("    {");
-        sb.AppendLine("        // ... add your code here");
+        // TODO
         sb.AppendLine("    }");
         sb.AppendLine("}");
-        context.AddSource("FlowNet.ExampleExtension.Init.g.cs", sb.ToString());
+        context.AddSource("FlowInterops.InvokeComponentCollection.g.cs", sb.ToString());
     }
 }

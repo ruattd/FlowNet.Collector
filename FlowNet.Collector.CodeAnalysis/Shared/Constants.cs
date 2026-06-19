@@ -1,4 +1,4 @@
-namespace FlowNet.ExampleExtension.CodeAnalysis.Shared;
+namespace FlowNet.Collector.CodeAnalysis.Shared;
 
 internal static class Constants
 {
