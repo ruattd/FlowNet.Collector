@@ -37,11 +37,11 @@ jobs:
       - name: "Upload Artifact (.nupkg)"
         uses: actions/upload-artifact@v7.0.1
         with:
-          path: FlowNet.ExampleExtension/bin/${{ inputs.config }}/*.nupkg
+          path: FlowNet.Collector/bin/${{ inputs.config }}/*.nupkg
           archive: false
 
       - name: "Upload Artifact (.snupkg)"
         uses: actions/upload-artifact@v7.0.1
         with:
-          path: FlowNet.ExampleExtension/bin/${{ inputs.config }}/*.snupkg
+          path: FlowNet.Collector/bin/${{ inputs.config }}/*.snupkg
           archive: false
