@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- 1. Define your target frameworks. -->
+        <!-- 'netstandard2.0' is recommended, you can add other target(s) depending on your need. -->
+        <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- 2. Set your own package id (IMPORTANT!) and other properties below. -->
+        <PackageId>FlowNet.ExampleExtension</PackageId>
+        <Title>Flow.NET Example Extension</Title>
+        <Version>0.0.0</Version>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>FlowNet;Flow;.NET;Standard;Core</PackageTags>
+        <Authors>ruattd and other contributors</Authors>
+        <Description>An example extension for Flow.NET</Description>
+        <RepositoryUrl>https://github.com/ruattd/FlowNet.ExampleExtension</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- 3. Change text blow to the output file of your own source generator project. -->
+        <None Include="..\FlowNet.ExampleExtension.CodeAnalysis\bin\$(Configuration)\netstandard2.0\FlowNet.ExampleExtension.CodeAnalysis.dll"
+              Pack="true" PackagePath="/analyzers/dotnet/cs" Visible="false" />
+        <None Include="..\README.md" Pack="true" PackagePath="/" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FlowNet.Core" Version="0.2.0" />
+    </ItemGroup>
+
+    <Target Name="DisableFlowCodeAnalysis" BeforeTargets="CoreCompile">
+        <!-- Create a target to disable Flow.NET core analyzers, or your package will include some generated files. -->
+        <!-- There's nothing we can do about Microsoft's lousy team: -->
+        <!-- A five-year-ago issue about disabling analyzers via a property remains unanswered to this day. -->
+        <ItemGroup>
+            <!--suppress RequiredAttributes-->
+            <Analyzer Remove="@(Analyzer)" Condition="'%(Filename)' == 'FlowNet.CodeAnalysis'" />
+        </ItemGroup>
+    </Target>
+
+</Project>
