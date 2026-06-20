@@ -28,6 +28,7 @@ internal static class CommonCodeExtensions
             sb.AppendLine("using System.Threading.Tasks;");
             sb.AppendLine("using FlowNet.Core;");
             sb.AppendLine("using FlowNet.ComponentModel;");
+            sb.AppendLine("using FlowNet.Collector;");
             return sb;
         }
 

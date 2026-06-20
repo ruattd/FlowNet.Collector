@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="FlowNet.Core" Version="0.2.0" />
+        <PackageReference Include="FlowNet.Core" Version="0.2.2" />
     </ItemGroup>
 
     <Target Name="DisableFlowCodeAnalysis" BeforeTargets="CoreCompile">

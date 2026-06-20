@@ -18,4 +18,7 @@ internal static class Constants
     private const string FlowRunClassName = "RunAttribute";
     public const string FlowRunAttribute = $"{FlowClass}.{FlowRunClassName}";
     public const string FlowRunAttributeMetadataName = $"{FlowClass}+{FlowRunClassName}";
+
+    public const string CollectorMetaAttribute = "FlowNet.Collector.CollectorMeta";
+    public const string SupportsMethodAttribute = $"{CollectorMetaAttribute}.SupportsMethod";
 }
