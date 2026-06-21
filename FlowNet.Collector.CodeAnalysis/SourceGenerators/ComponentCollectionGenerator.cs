@@ -23,7 +23,8 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
         string CollectionPoint,
         int CollectionPointType,
         string? TargetMethodDelegateQualifiedName,
-        int? NamedTypeGenerationMode
+        int? NamedTypeGenerationMode,
+        bool NamedTypeUseDelegate
     );
 
     private readonly record struct TargetComponentInfo(
@@ -84,7 +85,8 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
                     // target method delegate type name
                     var targetMethodDelegateQualifiedName = supportsMethodAttr?.AttributeClass?.TypeArguments[0].GetFullyQualifiedName();
                     var namedTypeGenerationMode = supportsNamedTypeAttr?.ConstructorArguments[0].Value as int?;
-                    collector = new CollectorMetaInfo(cp, type.Value, targetMethodDelegateQualifiedName, namedTypeGenerationMode);
+                    var namedTypeUseDelegate = supportsNamedTypeAttr?.ConstructorArguments[1].Value as bool? ?? false;
+                    collector = new CollectorMetaInfo(cp, type.Value, targetMethodDelegateQualifiedName, namedTypeGenerationMode, namedTypeUseDelegate);
                 }
                 collectors[attr.AttributeClass] = collector;
             }
@@ -141,14 +143,20 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
                         case TGMode_TypeofKeyword:
                             sb.Append("typeof(").Append(qualifiedName).Append(")");
                             break;
-                        case TGMode_EmptyConstructor:
-                            sb.Append("new ").Append(qualifiedName).Append("()");
-                            break;
-                        case TGMode_Constructor:
+                        case TGMode_EmptyConstructor or TGMode_Constructor:
+                            if (collector.NamedTypeUseDelegate)
+                            {
+                                var delegateType = collector.TargetMethodDelegateQualifiedName ?? "System.Func<object>";
+                                sb.Append("new ").Append(delegateType).Append("(() => ");
+                            }
                             sb.Append("new ").Append(qualifiedName).Append('(');
-                            AppendArguments(false);
+                            if (collector.NamedTypeGenerationMode == TGMode_Constructor)
+                            {
+                                AppendArguments(false);
+                                appendArguments = false;
+                            }
                             sb.Append(')');
-                            appendArguments = false;
+                            if (collector.NamedTypeUseDelegate) sb.Append(')');
                             break;
                     }
                 }

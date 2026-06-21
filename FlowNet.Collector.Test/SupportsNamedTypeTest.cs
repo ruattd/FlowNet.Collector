@@ -15,14 +15,23 @@ public sealed class TargetClassAttribute(string test) : Attribute;
 public sealed class TargetClassEmptyCtorAttribute(string test) : Attribute;
 
 [CollectorMeta("FlowNet.Collector.Test.SupportsNamedTypeTestClass.Collect")]
+[CollectorMeta.SupportsNamedType(TypeGenerationMode.EmptyConstructor, true)]
+[CollectorMeta.SupportsMethod<Func<ISupportsNamedTypeTest>>]
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class TargetClassEmptyCtorDelegateAttribute : Attribute;
+
+[CollectorMeta("FlowNet.Collector.Test.SupportsNamedTypeTestClass.Collect")]
 [CollectorMeta.SupportsNamedType(TypeGenerationMode.TypeofKeyword)]
 [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Struct | AttributeTargets.Class)]
 public sealed class TargetTypeAttribute : Attribute;
 
+public interface ISupportsNamedTypeTest;
+
 [TargetClass("test")]
 [TargetClassEmptyCtor("test")]
 [TargetType]
-public class SupportsNamedTypeTestClass(string test = "")
+[TargetClassEmptyCtorDelegate]
+public class SupportsNamedTypeTestClass(string test = "") : ISupportsNamedTypeTest
 {
     public static Task Collect(Type target, string test = "")
     {
@@ -33,6 +42,13 @@ public class SupportsNamedTypeTestClass(string test = "")
     public static Task Collect(SupportsNamedTypeTestClass? target, string test = "")
     {
         Console.WriteLine($"Test arg: {test}");
+        return Task.CompletedTask;
+    }
+
+    public static Task Collect(Func<ISupportsNamedTypeTest> target)
+    {
+        var t = target();
+        Console.WriteLine("Type: " + t.GetType().FullName);
         return Task.CompletedTask;
     }
 }
