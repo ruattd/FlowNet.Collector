@@ -2,6 +2,8 @@
 
 Flow.NET 扩展: 基于源生成器的组件收集器
 
+[![NuGet Version](https://img.shields.io/nuget/v/FlowNet.Collector?style=flat-square)](https://www.nuget.org/packages/FlowNet.Collector)
+
 ## 有什么用
 
 通过自定义的元注解 (Meta Attribute) 来标记任意 `internal` 或 `public` 的静态成员，自动生成引用该成员调用指定收集入口的代码。
@@ -18,7 +20,7 @@ dotnet add package FlowNet.Collector
 
 ```xml
 <ItemGroup>
-    <PackageReference Include="FlowNet.Collector" Version="0.1.0"/>
+    <PackageReference Include="FlowNet.Collector" Version="0.1.1"/>
 </ItemGroup>
 ```
 
