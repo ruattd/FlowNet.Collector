@@ -21,6 +21,12 @@ public sealed class CollectorMeta(
     /// <typeparam name="TDelegate">The delegate type of target methods</typeparam>
     public sealed class SupportsMethod<TDelegate> : Attribute
         where TDelegate : Delegate;
+
+    /// <summary>
+    /// Mark the attribute as a named type (class, interface...) collector and specify generation mode.
+    /// </summary>
+    /// <param name="mode">Specify how to deal with target type</param>
+    public sealed class SupportsNamedType(TypeGenerationMode mode) : Attribute;
 }
 
 #pragma warning restore CS9113 // Parameter is unread.

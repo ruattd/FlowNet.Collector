@@ -21,4 +21,5 @@ internal static class Constants
 
     public const string CollectorMetaAttribute = "FlowNet.Collector.CollectorMeta";
     public const string SupportsMethodAttribute = $"{CollectorMetaAttribute}.SupportsMethod";
+    public const string SupportsNamedTypeAttribute = $"{CollectorMetaAttribute}.SupportsNamedType";
 }

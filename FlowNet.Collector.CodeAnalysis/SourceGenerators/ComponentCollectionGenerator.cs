@@ -15,10 +15,15 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
     private const int CPType_Method = 1;
     private const int CPType_FlowTask = 2;
 
+    private const int TGMode_TypeofKeyword = 0;
+    private const int TGMode_EmptyConstructor = 1;
+    private const int TGMode_Constructor = 2;
+
     private record CollectorMetaInfo(
         string CollectionPoint,
         int CollectionPointType,
-        string? TargetMethodDelegateQualifiedName
+        string? TargetMethodDelegateQualifiedName,
+        int? NamedTypeGenerationMode
     );
 
     private readonly record struct TargetComponentInfo(
@@ -60,12 +65,13 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
             // get collector info or extract new
             if (!collectors.TryGetValue(attr.AttributeClass, out var collector))
             {
-                AttributeData? metaMarkupAttr = null, supportsMethodAttr = null;
+                AttributeData? metaMarkupAttr = null, supportsMethodAttr = null, supportsNamedTypeAttr = null;
                 foreach (var a in attr.AttributeClass.GetAttributes())
                 {
                     var name = a.AttributeClass?.GetSimplifiedTypeName();
                     if (name == Constants.CollectorMetaAttribute) metaMarkupAttr = a;
                     if (name == Constants.SupportsMethodAttribute) supportsMethodAttr = a;
+                    if (name == Constants.SupportsNamedTypeAttribute) supportsNamedTypeAttr = a;
                 }
                 // mark as not a collector first
                 collector = null;
@@ -77,7 +83,8 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
                     if (type is null or 0) type = cp.Contains(':') ? CPType_FlowTask : CPType_Method;
                     // target method delegate type name
                     var targetMethodDelegateQualifiedName = supportsMethodAttr?.AttributeClass?.TypeArguments[0].GetFullyQualifiedName();
-                    collector = new CollectorMetaInfo(cp, type.Value, targetMethodDelegateQualifiedName);
+                    var namedTypeGenerationMode = supportsNamedTypeAttr?.ConstructorArguments[0].Value as int?;
+                    collector = new CollectorMetaInfo(cp, type.Value, targetMethodDelegateQualifiedName, namedTypeGenerationMode);
                 }
                 collectors[attr.AttributeClass] = collector;
             }
@@ -110,16 +117,43 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
             var collector = target.Collector;
             sb.Append("        await ");
             if (target.Kind == SymbolKind.Method && collector.TargetMethodDelegateQualifiedName == null) continue;
+            if (target.Kind == SymbolKind.NamedType && collector.NamedTypeGenerationMode == null) continue;
+            void AppendArguments(bool appendComma = true)
+            {
+                var it = target.Arguments.GetEnumerator();
+                if (!it.MoveNext()) return;
+                if (appendComma) sb.Append(", ");
+                sb.Append(it.Current.ToCSharpString());
+                while (it.MoveNext()) sb.Append(", ").Append(it.Current.ToCSharpString());
+            }
             void AppendSymbolReferenceCode()
             {
                 var qualifiedName = target.FullQualifiedName;
-                if (target.Kind == SymbolKind.Method) sb.Append("new ")
-                    .Append(collector.TargetMethodDelegateQualifiedName).Append("(").Append(qualifiedName).Append(")");
+                var appendArguments = true;
+                if (target.Kind == SymbolKind.Method)
+                {
+                    sb.Append("new ").Append(collector.TargetMethodDelegateQualifiedName).Append("(").Append(qualifiedName).Append(")");
+                }
+                else if (target.Kind == SymbolKind.NamedType)
+                {
+                    switch (collector.NamedTypeGenerationMode)
+                    {
+                        case TGMode_TypeofKeyword:
+                            sb.Append("typeof(").Append(qualifiedName).Append(")");
+                            break;
+                        case TGMode_EmptyConstructor:
+                            sb.Append("new ").Append(qualifiedName).Append("()");
+                            break;
+                        case TGMode_Constructor:
+                            sb.Append("new ").Append(qualifiedName).Append('(');
+                            AppendArguments(false);
+                            sb.Append(')');
+                            appendArguments = false;
+                            break;
+                    }
+                }
                 else sb.Append(qualifiedName);
-            }
-            void AppendArguments()
-            {
-                foreach (var arg in target.Arguments) sb.Append(", ").Append(arg.ToCSharpString());
+                if (appendArguments) AppendArguments();
             }
             switch (collector.CollectionPointType)
             {
@@ -129,14 +163,12 @@ public class ComponentCollectionGenerator : IIncrementalGenerator
                         sb.Append("<").Append(string.Join(", ", target.TypeArguments.Select(t => t.GetQualifiedSymbolName()))).Append(">");
                     sb.Append("(");
                     AppendSymbolReferenceCode();
-                    AppendArguments();
                     break;
                 case CPType_FlowTask:
                     if (target.TypeArguments.Length > 0) sb.AppendLine("        // WARNING: Flow task with type arguments is not supported");
                     sb.Append("CollectorStatic.InvokeCollectionTask(\"").Append(collector.CollectionPoint).Append("\", ");
                     if (target.Arguments.Length > 0) sb.Append("(");
                     AppendSymbolReferenceCode();
-                    AppendArguments();
                     if (target.Arguments.Length > 0) sb.Append(")");
                     break;
             }

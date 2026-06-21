@@ -6,7 +6,7 @@ namespace FlowNet.Collector.Test;
 
 public delegate void TestAction<T, T2>(T t, T2 t2);
 
-[CollectorMeta("test:target")]
+[CollectorMeta("test:collect")]
 [CollectorMeta.SupportsMethod<Action>]
 [AttributeUsage(AttributeTargets.Method)]
 public sealed class TaskTargetAttribute(string test) : Attribute;
